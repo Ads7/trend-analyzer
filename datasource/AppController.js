@@ -5,7 +5,7 @@ var http = require( 'http' );
 var querystring = require( 'querystring' );
 
 function getDataSourceList() {
-    return index.dataSourceList;
+    return Object.keys( index.dataSources );
 }
 
 function initDataSource( options ) {
@@ -14,7 +14,7 @@ function initDataSource( options ) {
     var dataRate = options[ 'dataRate' ];
 
     if( ! dataSources[ sourceName ] ) {
-        dataSource = require( './' + sourceName + 'Wrapper' );
+        dataSource = require( index.dataSources[ sourceName ] );
         dataSources[ sourceName ] = dataSource;
     }
     else
@@ -22,11 +22,11 @@ function initDataSource( options ) {
 
     GLOBAL.datasourceInterval = variableInterval.setInterval( function( dataRate, offset ) {
 	dataSource.fetch( {
+	    'sourceName' : sourceName,
 	    'dataRate' : dataRate,
 	    'offset' : offset,
 	    'callback' : throwData
 	} );
-	GLOBAL.datasourceInterval.setOffset( offset + parseInt( dataRate ) );
     }, dataRate );
 
 }
@@ -34,6 +34,7 @@ function initDataSource( options ) {
 function throwData( options ) {
     var data = options[ 'data' ];
 
+    GLOBAL.datasourceInterval.setOffset( options[ 'offset' ] );
     var req = http.request( {
 	    "host" : "localhost",
 	    "hostname" : "localhost",
@@ -53,7 +54,7 @@ function throwData( options ) {
 function fetchGroundTruth( options ) {
     var sourceName = options[ 'sourceName' ];
     if( ! dataSources[ sourceName ] ) {
-        dataSource = require( './' + sourceName + 'Wrapper' );
+        dataSource = require( index.dataSources[ sourceName ] );
         dataSources[ sourceName ] = dataSource;
     }
     else

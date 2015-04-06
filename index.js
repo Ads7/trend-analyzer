@@ -14,3 +14,4 @@ server.start( router.route, handle );
 
 exports.handle = handle;
 exports.staticDirectory = __dirname + '/static/';
+exports.templateDirectory = __dirname + '/templates/';

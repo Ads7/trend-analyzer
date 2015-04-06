@@ -1,6 +1,6 @@
-var dataSourceList = [
-    'database',
-    'live streaming'
-];
+var dataSources = {
+    'database' : './twitter_coling2012Wrapper',
+    'live streaming' : './live\ streamingWrapper'
+};
 
-exports.dataSourceList = dataSourceList;
+exports.dataSources = dataSources;

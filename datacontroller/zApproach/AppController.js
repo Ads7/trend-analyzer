@@ -12,37 +12,37 @@ function updateZValues( options ) {
 
     var scores = options[ 'scores' ];
 
-    scores.forEach( function( score ) {
+    if( scores )
+	scores.forEach( function( score ) {
 
-        if ( score['mean'] ) {
-        
-        score[ 'mean' ] = ( score.total * score.mean + score.count )/( score.total + 1 );
-            score[ 'variance' ] = Math.sqrt( ( score.total * score.variance * score.variance + score.count * score.count ) / ( score.total + 1 ) );
-            score[ 'total' ]++;
-            score[ 'z-score' ] = ( score.count - score.mean ) / score.variance + 10000;
-            score['count'] = 0;
+	    if ( score['mean'] ) {
+		score[ 'mean' ] = ( score.total * score.mean + score.count )/( score.total + 1 );
+		score[ 'variance' ] = Math.sqrt( ( score.total * score.variance * score.variance + score.count * score.count ) / ( score.total + 1 ) );
+		score[ 'total' ]++;
+		score[ 'z-score' ] = ( score.count - score.mean ) / score.variance + 10000;
+		score['count'] = 0;
 
-            zModel.upsert( {
-                "score" : score
-            } );
+		zModel.upsert( {
+		    "score" : score
+		} );
 
-        }
+	    }
 
-        else {
+	    else {
 
-            score['mean'] = score.count;
-            score['variance'] = score.count;
-            score['total'] = 1;
-            score['z-score'] = 10000;
-            score['count']=0;
+		score['mean'] = score.count;
+		score['variance'] = score.count;
+		score['total'] = 1;
+		score['z-score'] = 10000;
+		score['count']=0;
 
-            zModel.upsert( {
-                'score' : score
-            } );
+		zModel.upsert( {
+		    'score' : score
+		} );
 
-        }
+	    }
 
-    });
+	});
 }
 
 function changeConstants( options ) {

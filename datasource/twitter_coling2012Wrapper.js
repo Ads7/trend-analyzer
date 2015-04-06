@@ -5,14 +5,17 @@ var fetch = function( options ){
     conn.getConnection( 'frouzan', function( client ) {
 
         var collection = mongodb.Collection( client, 'chapter1' );
-        var messages = collection.find().limit( parseInt( options[ 'dataRate' ] ) ).skip( options[ 'offset' ] );
+	var dataRate = options[ 'dataRate' ];
+	var offset = options[ 'offset' ];
+        var messages = collection.find().limit( parseInt( dataRate ) ).skip( offset );
 
         messages.toArray( function( err, data ) {
             if ( err ) {
             }
             else
                 options[ 'callback' ]( {
-		    'data' : data
+		    'data' : data,
+		    'offset' : offset + parseInt( dataRate )
 		} );
         } );
 

@@ -11,7 +11,6 @@ var twit = new twitter({
 
 twit.stream('statuses/filter', {'locations':'-122.75,36.8,-121.75,37.8,-74,40,-73,41'}, function(stream) {
   stream.on('data', function (data) {
-    //console.log(data);
     if( options['callback'] ){
     	options['callback']({'data':data});
     }
