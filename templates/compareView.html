@@ -1,0 +1,34 @@
+<html>
+    <head>
+
+	<title> Trend Analyzer </title>
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+	<link rel = "stylesheet" type = "text/css" href = "/static/css/rangeslider.css">
+	<script src = "../static/js/jquery-2.1.0.min.js"></script>
+	<script src = "../static/js/compareview.js"></script>
+
+    </head>
+    <body>
+	<div class= "container">
+        <div class="row">
+            <div class="col-sm-6">
+                <table class="table table-striped">
+                    <caption>Compare View</caption>
+                    <thead>
+                        <tr>
+                        {{#approachList}}
+                        <th> {{.}} </th>
+                        {{/approachList}}
+                        </tr>
+                    </thead>
+                    <tbody>             
+                    </tbody>    
+                </table>  
+            </div>
+            <div class = "col-sm-6">
+           
+            </div>
+        </div>
+     </div>   
+    </body>
+</html>
