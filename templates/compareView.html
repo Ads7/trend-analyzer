@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="../static/css/bootstrap.min.css">
 	<link rel = "stylesheet" type = "text/css" href = "/static/css/rangeslider.css">
 	<script src = "../static/js/jquery-2.1.0.min.js"></script>
+    <script src="../static/js/Chart.min.js"></script>
 	<script src = "../static/js/compareview.js"></script>
 
     </head>
@@ -26,9 +27,51 @@
                 </table>  
             </div>
             <div class = "col-sm-6">
-           
+                <div>
+                <canvas id="canvas" height="450" width="600"></canvas>
+                </div>
+                
             </div>
         </div>
-     </div>   
+     </div>
+
+    <script>
+        var randomScalingFactor = function(){ return Math.round(Math.random()*100)};
+        var lineChartData = {
+            labels : ["January","February","March","April","May","June","July"],
+            datasets : [
+                {
+                    label: "My First dataset",
+                    fillColor : "rgba(220,220,220,0.2)",
+                    strokeColor : "rgba(220,220,220,1)",
+                    pointColor : "rgba(220,220,220,1)",
+                    pointStrokeColor : "#fff",
+                    pointHighlightFill : "#fff",
+                    pointHighlightStroke : "rgba(220,220,220,1)",
+                    data : [randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor()]
+                },
+                {
+                    label: "My Second dataset",
+                    fillColor : "rgba(151,187,205,0.2)",
+                    strokeColor : "rgba(151,187,205,1)",
+                    pointColor : "rgba(151,187,205,1)",
+                    pointStrokeColor : "#fff",
+                    pointHighlightFill : "#fff",
+                    pointHighlightStroke : "rgba(151,187,205,1)",
+                    data : [randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor()]
+                }
+            ]
+
+        }
+
+    window.onload = function(){
+        var ctx = document.getElementById("canvas").getContext("2d");
+        window.myLine = new Chart(ctx).Line(lineChartData, {
+            responsive: true
+        });
+    }
+
+
+    </script>   
     </body>
 </html>

@@ -1,15 +1,15 @@
-{
-   "approach1": ["Clark","Delhi",
+[
+    ["Clark","Delhi",
            		 "Education",
            	 20],
-   "approach2":["james",
+   ["james",
             		"Delhi",
            		 "Eon",
            	 20
        ],
-    "approach3":[ "Clark",
+   [ "Clark",
             		"Delhi",
            		 "Education",
            	 20
        ]
-}
+]
