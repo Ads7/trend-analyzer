@@ -10,6 +10,14 @@
     width : 50%;
 }
 
+.col-span-4 {
+    width : 33.33333%;
+}
+
+.col-span-8 {
+    width: 66.66667%;
+}
+
 .label, output {
     color : rgb(62, 62, 62);
     margin : 2%;
@@ -80,6 +88,19 @@ button {
     color: rgb(62, 62, 62);
 }
 
+table, tr {
+    width : 100%;
+}
+
+td {
+    text-align : center;
+}
+
 #selectedApproaches {
     margin : 2%;
+}
+
+#percentageMatchGraph {
+    border: 1px solid #9C9C9C;
+    border-radius: 5px;
 }

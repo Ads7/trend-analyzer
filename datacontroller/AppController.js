@@ -1,31 +1,24 @@
 var index = require( './index' );
-var approaches = {};
 var cron = require( 'cron' );
 var querystring = require( 'querystring' );
 
 function getApproachList() {
-    return index.availableApproaches;
+    return Object.keys( index.availableApproaches );
 }
 
 function setCron( options ) {
 
-    var approachList = options[ 'approachList' ];
-    var scoreRate = options[ 'scoreRate' ];
+    var approachList = options.approachList;
+    var scoreRate = options.scoreRate;
     var approach;
+    var approachName;
 
     GLOBAL.dataControllerCron = new cron.CronJob ( '1 */' + scoreRate +' * * * *', function() {
 
-	for( index in approachList ) {
-	    var approachName = approachList[ index ];
-
-	    if( ! approaches[ approachName ] )
-		approaches[ approachName ] = approach = require( './' + approachName + 'Approach/AppController' );
-
-	    else
-		approach = approaches[ approachName ];
-
+	for( var i in approachList ) {
+	    approachName = approachList[ i ];
+	    approach = require( index.availableApproaches[ approachName ] );
 	    approach.updateScores();
-
 	}
 
     }, null, true );
@@ -35,20 +28,15 @@ function setCron( options ) {
 }
 
 function fetchTrends( options ) {
-    var approachList = options[ 'approachList' ];
+    var approachList = options.approachList;
     var approach;
     if( approachList && approachList.length ){
 	var approachName = approachList.pop();
+	approach = require( index.availableApproaches[ approachName ] );
 
-	if( ! approaches[ approachName ] )
-	    approaches[ approachName ] = approach = require( './' + approachName + 'Approach/AppController' );
-
-	else
-	    approach = approaches[ approachName ];
-
-	options[ 'approachList' ] = approachList;
+	options.approachList = approachList;
 	approach.fetchTrends( {
-	    'trends' : options[ 'trends' ],
+	    'trends' : options.trends,
 	    'requestTime' : new Date().getTime(),
 	    'callback' : fetchTrends,
 	    'callbackOptions' : options
@@ -67,6 +55,9 @@ function route ( segments, response, postData ) {
 	case "data" :
 	    handleData( segments, response, postData );
 	    break;
+    case "changeScoreRate" :
+        changeScoreRate( segments, response, postData );
+        break;
     }
 }
 
@@ -74,13 +65,7 @@ function changeConstants( segments, response, postData ) {
     if( postData ) {
 
 	var parsedData = querystring.parse( postData );
-	var approach;
-
-	if( ! approaches[ approachName ] )
-		approaches[ approachName ] = approach = require( './' + approachName + 'Approach/AppController' );
-
-	    else
-		approach = approaches[ approachName ];
+	var approach = require( index.availableApproaches[ approachName ] );
 
 	approach.changeConstants( parsedData[ 'constants' ] );
 
@@ -99,10 +84,10 @@ function handleData( segments, response, postData ) {
 	var messages = JSON.parse( parsedData[ 'messages' ] );
 	var approachList = JSON.parse( parsedData[ 'approachList' ] )[ 'list' ];
 	var tags = [];
-	var approach, index;
+	var approach, i;
 
-	for( index in messages ) {
-	    var tweet = messages[ index ];
+	for( i in messages ) {
+	    var tweet = messages[ i ];
 	    if( tweet.entities )
 		tweet.entities.hashtags = tweet.entities.hashtags.map( function( hashtag ) {
 		    hashtag = hashtag.toLowerCase();
@@ -112,14 +97,9 @@ function handleData( segments, response, postData ) {
 	}
 
 
-	for( index in approachList ) {
-	    var approachName = approachList[ index ];
-
-	    if( ! approaches[ approachName ] )
-		approaches[ approachName ] = approach = require( './' + approachName + 'Approach/AppController' );
-
-	    else
-		approach = approaches[ approachName ];
+	for( i in approachList ) {
+	    var approachName = approachList[ i ];
+	    approach = require( index.availableApproaches[ approachName ] );
 
 	    approach.handleData( {
 		'messages' : messages,
@@ -132,6 +112,15 @@ function handleData( segments, response, postData ) {
     }
     else {
     }
+}
+
+function changeScoreRate( segments, response, postData )
+{
+    var parsedData = querystring.parse( postData );
+    var newCronTime = new cron.CronTime( '1 */' + parsedData.scoreRate + ' * * * *' );
+    GLOBAL.dataControllerCron.setTime( newCronTime );
+    GLOBAL.dataControllerCron.start();
+    response.end();
 }
 
 exports.getApproachList = getApproachList;

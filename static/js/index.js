@@ -1,3 +1,8 @@
+var selectedApproaches = [];
+var dataSource;
+var cronSchedulingTime;
+var dataRateValue;
+
 $( function() {
     var valueOutput = function( element ) {
         var value = element.value;
@@ -18,12 +23,11 @@ $( function() {
         polyfill : false
     } );
 
-    var selectedApproaches = [];
     $( document ).on( 'click', '.approachList ul li', function() {
 	var text = $( this ).html();
 	$( this ). remove();
 	$( '#selectedApproaches' ).append( '<span class="removable">' + text + '<span class="removable_remove">&#10006;</span></span>' );
-	selectedApproaches.push( text );
+	selectedApproaches.push( $.trim( text ) );
 	if( selectedApproaches.length > 1 )
 	    $( '#analyzeApproachButton' ).html( "Compare Approaches" );
 	else
@@ -44,12 +48,17 @@ $( function() {
     } );
 
     $( '#analyzeApproachButton' ).click( function() {
+        cronSchedulingTime = $( '#scoreRate' ).val();
+        dataRateValue = $( "#dataRate" ).val();
 	if( selectedApproaches.length > 0 ) {
+	    dataSource = $.trim( $( "#dataSource" ).val() );
 	    $.post( '/approach', {
-		'sourceName' : $.trim( $( "#dataSource" ).val() ),
-		'dataRate' : $( "#dataRate" ).val(),
+		'sourceName' : dataSource,
+		'dataRate' : dataRateValue,
 		'approachList' : JSON.stringify( { 'list' : selectedApproaches } ),
-		'scoreRate' : $( "#scoreRate" ).val()
+		'scoreRate' : cronSchedulingTime
+	    }, function( data ) {
+		document.write( data );
 	    } );
 	    $( '.error' ).html( "" );
 	}

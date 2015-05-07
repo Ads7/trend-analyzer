@@ -1,5 +1,4 @@
 var index = require( './index.js' );
-var dataSources = {};
 var variableInterval = require( '../utils/VariableInterval' );
 var http = require( 'http' );
 var querystring = require( 'querystring' );
@@ -9,22 +8,18 @@ function getDataSourceList() {
 }
 
 function initDataSource( options ) {
-    var sourceName = options[ 'sourceName' ];
+    var sourceName = options.sourceName;
     var dataSource;
-    var dataRate = options[ 'dataRate' ];
+    var dataRate = options.dataRate;
 
-    if( ! dataSources[ sourceName ] ) {
-        dataSource = require( index.dataSources[ sourceName ] );
-        dataSources[ sourceName ] = dataSource;
-    }
-    else
-        dataSource = dataSources[ sourceName ];
+    dataSource = require( index.dataSources[ sourceName ] );
 
     GLOBAL.datasourceInterval = variableInterval.setInterval( function( dataRate, offset ) {
 	dataSource.fetch( {
 	    'sourceName' : sourceName,
 	    'dataRate' : dataRate,
 	    'offset' : offset,
+	    'approachList' : options.approachList,
 	    'callback' : throwData
 	} );
     }, dataRate );
@@ -32,20 +27,22 @@ function initDataSource( options ) {
 }
 
 function throwData( options ) {
-    var data = options[ 'data' ];
+    var data = options.data;
 
-    GLOBAL.datasourceInterval.setOffset( options[ 'offset' ] );
+    GLOBAL.datasourceInterval.setOffset( options.offset );
     var req = http.request( {
 	    "host" : "localhost",
 	    "hostname" : "localhost",
 	    "port" : "8888",
 	    "method" : "POST",
-	    "path" : "/final/sink/handle"
+	    "path" : "/sink/data"
     } );
     req.on( 'error', function( e ) {
+	console.log( e );
     } );
     req.write( querystring.stringify( {
-        'messages' : JSON.stringify( data )
+        'messages' : JSON.stringify( data ),
+	'approachList' : JSON.stringify( { 'list' : options[ 'approachList' ] } )
     } ) );
     req.end();
 
@@ -53,12 +50,8 @@ function throwData( options ) {
 
 function fetchGroundTruth( options ) {
     var sourceName = options[ 'sourceName' ];
-    if( ! dataSources[ sourceName ] ) {
-        dataSource = require( index.dataSources[ sourceName ] );
-        dataSources[ sourceName ] = dataSource;
-    }
-    else
-        dataSource = dataSources[ sourceName ];
+    var dataSource = require( index.dataSources[ sourceName ] );
+    options[ 'offset' ] = GLOBAL.datasourceInterval.offset;
     return dataSource.fetchGroundTruth( options );
 
 }
@@ -74,7 +67,7 @@ function route ( segments, response, postData ) {
 function changeDataRate( segments, response, postData ) {
     if ( postData ) {
 	var parsedData  = querystring.parse( postData );
-	GLOBAL.datasourceInterval.changeDataRate( parsedData[ 'dataRate' ] );
+	GLOBAL.datasourceInterval.changeDataRate( parsedData[ 'scoreRate' ] );
 
     }
     else {

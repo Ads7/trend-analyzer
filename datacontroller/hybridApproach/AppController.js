@@ -3,7 +3,7 @@ var hybridModel = require( './Hybrid.js' );
 function updateScores() {
 
     hybridModel.fetchAll( {
-	'callback' : updateZValues
+	    'callback' : updateHybridValues
     } );
 
 }
@@ -12,7 +12,8 @@ function updateHybridValues( options ) {
 
     var scores = options[ 'scores' ];
 
-    scores.forEach( function( score ) {
+    for( i = 0; i < scores.length; i ++ ) {
+        var score = scores[ i ];
 
         if ( score['mean'] ) {
             score[ 'mean' ] = ( score.total * score.mean + score.count )/( score.total + 1 );

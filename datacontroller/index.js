@@ -1,8 +1,8 @@
-var approachList = [
-    'z-approach',
-    'iir-approach',
-    'hybrid approach',
-    'standard deviation approach'
-];
+var approaches = {
+    'z-approach' : './zApproach/AppController',
+    'iir-approach' : './iirApproach/AppController',
+    'hybrid approach' : './hybridApproach/AppController',
+    'standard deviation approach' : './stdevApproach/AppController',
+};
 
-exports.availableApproaches = approachList;
+exports.availableApproaches = approaches;
